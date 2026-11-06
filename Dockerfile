@@ -1,21 +1,13 @@
-FROM node:22-slim
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    openssl \
-    curl \
-    ca-certificates \
-    libc6 \
-    libstdc++6 \
-    && rm -rf /var/lib/apt/lists/*
+FROM python:3.12-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
-
-RUN npm install --omit=dev
-
-COPY . .
+COPY app.py requirements.txt index.html ./
 
 EXPOSE 3000
 
-CMD ["node", "index.js"]
+RUN apk update && apk --no-cache add openssl bash curl &&\
+    chmod +x app.py &&\
+    pip install -r requirements.txt
+    
+CMD ["python3", "app.py"]
